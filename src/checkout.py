@@ -10,22 +10,26 @@
 #    my cart is cleared, and I receive a confirmation."
 
 import cart
-import inventory
 import orders
 
 
 class CheckoutResult:
-    def __init__(self, success: bool, message: str, order_ids: list = None, failures: list = None):
+    def __init__(self,
+                 success: bool,
+                 message: str,
+                 order_ids: list = None,
+                 failures: list = None):
         self.success = success
         self.message = message
         self.order_ids = order_ids or []
-        self.failures = failures or []   # items that could not be ordered
+        self.failures = failures or []  # items that could not be ordered
 
     def __repr__(self):
-        return (f"CheckoutResult(success={self.success}, "
-                f"message='{self.message}', "
-                f"order_ids={self.order_ids}, "
-                f"failures={self.failures})")
+        return (
+            "CheckoutResult(success="
+            f"{self.success}, message='{self.message}', "
+            f"order_ids={self.order_ids}, failures={self.failures})"
+        )
 
 
 def checkout(customer_email: str) -> CheckoutResult:
@@ -39,18 +43,25 @@ def checkout(customer_email: str) -> CheckoutResult:
 
     After processing all items:
       - If every item succeeded: cart is cleared, result is success
-      - If some items failed: cart keeps only the failed items, result is partial failure
+      - If some items failed: cart keeps only the failed items.
+        Result is partial failure.
       - If the cart was empty: return an error immediately
 
     Notifications are sent per item by orders.place_order() automatically.
     """
     if not customer_email or "@" not in customer_email:
-        return CheckoutResult(False, "Invalid customer email")
+        return CheckoutResult(
+            False,
+            "Invalid customer email"
+        )
 
     items = cart.get_cart(customer_email)
 
     if not items:
-        return CheckoutResult(False, "Cart is empty")
+        return CheckoutResult(
+            False,
+            "Cart is empty"
+        )
 
     order_ids = []
     failures = []
@@ -72,9 +83,13 @@ def checkout(customer_email: str) -> CheckoutResult:
         cart.clear_cart(customer_email)
         for f in failures:
             cart.add_to_cart(customer_email, f["item_id"], f["quantity"])
+        message = (
+            f"Partial checkout: {len(order_ids)} succeeded, "
+            f"{len(failures)} failed"
+        )
         return CheckoutResult(
             False,
-            f"Partial checkout: {len(order_ids)} succeeded, {len(failures)} failed",
+            message,
             order_ids=order_ids,
             failures=failures,
         )
