@@ -6,15 +6,11 @@ _sent = []
 
 
 def send_confirmation(
-    email: str,
-    order_id: str,
-    item_id: str,
-    quantity: int,
-) -> None:
-    """
-    Record a confirmation notification.
-    Simulates sending an email.
-    """
+        email: str,
+        order_id: str,
+        item_id: str,
+        quantity: int) -> None:
+    """Record a confirmation notification (simulates sending an email)."""
     record = {
         "email": email,
         "order_id": order_id,
@@ -22,10 +18,7 @@ def send_confirmation(
         "quantity": quantity,
     }
     _sent.append(record)
-    print(
-        f"[NOTIFICATION] Confirmation sent → {email} "
-        f"(order: {order_id})"
-    )
+    print(f"[NOTIFICATION] Confirmation sent → {email}  (order: {order_id})")
 
 
 def get_sent() -> list:
