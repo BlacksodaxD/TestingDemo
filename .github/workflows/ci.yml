@@ -25,3 +25,9 @@ jobs:
 
     - name: Test
       run: pytest tests/ -v
+
+    - name: Security scan
+      run: bandit -r src/
+      
+    - name: Dependency scan
+      run: safety check -r requirements.txt
